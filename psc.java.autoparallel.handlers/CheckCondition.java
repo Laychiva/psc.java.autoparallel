@@ -36,10 +36,10 @@ public class CheckCondition extends ASTVisitor {
 			ModifLocalList.add(node); // add method to list
 		}
 		/*
-		 * If Method is ThreadSafe, ReadOnly and/or ModifLocal then it is parallelisable
+		 * If Method is ThreadSafe, ReadOnly then it is parallelisable
 		 */
-		if(CheckCons.ThreadSafe && !CheckCons.hasWrite || CheckCons.isModifLocal) {
-			IsPara.add(node);  // add method to list
+		if(!CheckCons.hasWrite && ThreadSafe == true) {
+			IsPara.add(node);
 		}
 		return super.visit(node);
 	}
