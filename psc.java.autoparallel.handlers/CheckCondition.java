@@ -29,7 +29,7 @@ public class CheckCondition extends ASTVisitor {
 		if(!CheckCons.hasWrite) {
 			ThreadSafe = true;
 			ReadOnlyList.add(node); // add method to list
-			ThreadSafeList.add(node);  // first case if it is readonly then it is threadsafe
+			ThreadSafeList.add(node);
 		}
 		if(CheckCons.isModifLocal && !CheckCons.hasWrite) { // if Method modifies the local variable and doesn't modifies the field 
 															// then it is modifLocal
@@ -41,18 +41,22 @@ public class CheckCondition extends ASTVisitor {
 		if(!CheckCons.hasWrite && ThreadSafe == true) {
 			IsPara.add(node);
 		}
+		if(Flags.isSynchronized(node.getModifiers()) || CheckCons.ThreadSafe ) { // If modifier is Synchronized then it is ThreadSafe
+			ThreadSafeList.add(node);
+		}
 		return super.visit(node);
 	}
 }
-
 class CheckConditions extends ASTVisitor {
 	boolean hasWrite = false;
 	boolean isModifLocal = false;
 	boolean ThreadSafe = false;
-
-
-	public boolean isThreadSafe() {
-		return ThreadSafe;
+	
+	@Override
+	
+	public boolean visit(SynchronizedStatement node) { // if we meet a synchronized keyword in method, it is threadSafe
+		ThreadSafe = true;
+		return false;
 	}
 	
 	
