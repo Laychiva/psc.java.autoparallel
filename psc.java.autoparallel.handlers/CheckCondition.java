@@ -27,22 +27,24 @@ public class CheckCondition extends ASTVisitor {
 		CheckConditions CheckCons = new CheckConditions();
 		node.accept(CheckCons);
 		if(!CheckCons.hasWrite) {
-			ThreadSafe = true;
 			ReadOnlyList.add(node); // add method to list
-			ThreadSafeList.add(node);
 		}
-		if(CheckCons.isModifLocal && !CheckCons.hasWrite) { // if Method modifies the local variable and doesn't modifies the field 
-															// then it is modifLocal
+		// if Method modifies the local variable and doesn't modifies the field 
+		// then it is modifLocal
+		if(CheckCons.isModifLocal && !CheckCons.hasWrite) { 
 			ModifLocalList.add(node); // add method to list
+		}
+		
+		// If modifier is Synchronized or its body contains synchronized or it is readOnly
+		if(Flags.isSynchronized(node.getModifiers()) || CheckCons.ThreadSafe || !CheckCons.hasWrite) { 
+			ThreadSafe = true;
+			ThreadSafeList.add(node);
 		}
 		/*
 		 * If Method is ThreadSafe, ReadOnly then it is parallelisable
 		 */
 		if(!CheckCons.hasWrite && ThreadSafe == true) {
 			IsPara.add(node);
-		}
-		if(Flags.isSynchronized(node.getModifiers()) || CheckCons.ThreadSafe ) { // If modifier is Synchronized then it is ThreadSafe
-			ThreadSafeList.add(node);
 		}
 		return super.visit(node);
 	}
